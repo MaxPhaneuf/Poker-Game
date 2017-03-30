@@ -91,11 +91,6 @@ public class Poker {
             tableCard.setBounds(x, y, 125, 200);
             tableCard.setBackground(Color.BLACK);
             tableCard.setOpaque(true);
-           
-            Card card = new Card(0, 13);
-           JLabel test = new JLabel(new ImageIcon(card.getImage()));
-           tableCard.paintComponents(card.getImage().getGraphics());
-            
             table.add(tableCard);
             x = x + 155;
                         
