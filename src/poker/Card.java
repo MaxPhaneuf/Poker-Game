@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 
 /**
  *
@@ -18,16 +19,20 @@ import javax.swing.ImageIcon;
 public class Card {
     public static String [] colors = {"Trefle", "Pique", "Coeur", "Carreau"};  
     public static String [] faces = {null, "J","Q","K"};
-    private BufferedImage image = addImage("CardBack.png");
+    private JLabel image;
+    private ImageIcon show;
+    private ImageIcon hide; 
+   
     private String name;
     private int color;
     private int value;
-    private boolean picked = false;
+    
     
     public Card(int color, int value){
         this.color = color;
         this.value = value;
         setName(color, value);
+        setImage();
         
     }
     
@@ -41,17 +46,14 @@ public class Card {
     public String getName(){
         return name;
     }
-    public BufferedImage getImage(){
+    public JLabel getImage(){
         return image;
     }
     
-    public boolean isPicked(){
-        return picked;
+    public ImageIcon getHide(){
+        return hide;
     }
-    
-    public void pick(){
-        picked = true;
-    }
+       
     public void setName(int color, int value){
                         
         
@@ -66,25 +68,29 @@ public class Card {
         name = name + ".png";
     }
     
-    public BufferedImage setInPlay(){
-        setImage();
-        return image;
+    public void setInPlay(){
+        show = new ImageIcon(addImage(name));
+        image.setIcon(show);
+        
     }
            
-    public void setImage(){
-        image = addImage(name);
+    private void setImage(){
+        hide = new ImageIcon(addImage("CardBack.png"));
+        image = new JLabel(hide);
+        
     }
-    
+           
     public BufferedImage addImage(String fileName) {
         
-        BufferedImage image = null;
+        BufferedImage temp = null;
+        
         try {
             File file = new File(fileName);
-            image = ImageIO.read(file);
+            temp = ImageIO.read(file);
         } catch (IOException e) {
             System.out.println("File not found");
         }
-        return image;
+        return temp;
     }
     @Override
     public String toString(){

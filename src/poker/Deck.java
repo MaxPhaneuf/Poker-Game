@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 public class Deck {
 
     public static ArrayList<Card> deck = createDeck(); 
+    public static ArrayList<Card> discard = new ArrayList<>();
     
     
     public static void newDeck(){
@@ -51,6 +52,14 @@ public class Deck {
         return deck.remove(0);
     }
     
+    public static void discard(Card card){
+        discard.add(card);
+    }
+    
+    public static void burn(){
+        discard(Deck.pickCard());
+    }
+    
     public static int  rdn4(){
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(4);
@@ -78,9 +87,6 @@ public class Deck {
         JLabel image = null;
         for(int i = 0; i < deck.size(); i++){
             JPanel temp = new JPanel();
-            
-            temp.setOpaque(true);
-            //System.out.println(deck.get(i).getName());
             image = new JLabel(new ImageIcon(deck.get(i).addImage(deck.get(i).getName())));
             
             temp.add(image);
@@ -88,6 +94,24 @@ public class Deck {
         }
         mainWin.setVisible(true);
     }
+    
+    public static void showDiscard(){
+        JFrame mainWin;
+        mainWin = new JFrame("Discard");
+        mainWin.setSize(1300, 525);
+        mainWin.setLocationRelativeTo(null);
+        mainWin.setLayout(new GridLayout(4, 13, 20, 20));
+        JLabel image = null;
+        for(int i = 0; i < discard.size(); i++){
+            JPanel temp = new JPanel();
+            image = new JLabel(new ImageIcon(discard.get(i).addImage(discard.get(i).getName())));
+            
+            temp.add(image);
+            mainWin.getContentPane().add(temp);
+        }
+        mainWin.setVisible(true);
+    }
+    
     public String toString(){
         return getNames();
     }

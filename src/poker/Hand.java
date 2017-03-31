@@ -5,16 +5,22 @@
  */
 package poker;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Maxime
  */
 public class Hand {
-    public Card[] cards = new Card[5];
+    public ArrayList<Card> cards = new ArrayList<>();
     
     public Hand(){
-        for(int i = 0; i < cards.length; i++){
-            cards[i] = Deck.pickCard();
+        
+    }
+    
+    public void pickUp(int nbrCards){
+        for(int i = 0; i < nbrCards; i++){
+            cards.add(Deck.pickCard());
         }
     }
 }
