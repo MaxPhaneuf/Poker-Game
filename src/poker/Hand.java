@@ -13,9 +13,11 @@ import java.util.ArrayList;
  */
 public class Hand {
     public ArrayList<Card> cards = new ArrayList<>();
-    
     public Hand(){
         
+    }
+    public void add(Card card){
+        cards.add(card);
     }
     
     public void pickUp(int nbrCards){
@@ -23,4 +25,6 @@ public class Hand {
             cards.add(Deck.pickCard());
         }
     }
+    
+    
 }

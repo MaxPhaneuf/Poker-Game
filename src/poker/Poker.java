@@ -10,6 +10,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JOptionPane;
@@ -27,12 +28,15 @@ public class Poker implements ActionListener {
     private JPanel menu;
     private JPanel picks;
     private JTextField stage;
+    private JComboBox choice;
     private JPanel[] tableCards = new JPanel[5];
     private JPanel[] handCards = new JPanel[2];
     private JButton showDeck;
     private JButton nextStage;
     private JButton showDiscard;
     private JButton newGame;
+    private JButton results;
+    private JButton test;
     private boolean turn = false;
     private int[] posX = {20, 110, 200, 290, 380};
     private int[] posXPicks = {20, 110};
@@ -42,12 +46,14 @@ public class Poker implements ActionListener {
     private Hand draw;
     private Hand hand;
     private int time = 0;
-    private String[] textStage = {"Pre-Flop", "Flop", "Pre-Turn", "Turn", "Pre-River", "River"};
+    private String[] textStage = {"Pre-Flop", "Flop", "Turn", "River"};
 
     public Poker() {
         setUp();
+
         setUpHand();
         setUpFlop();
+
         refresh();
 
     }
@@ -82,25 +88,41 @@ public class Poker implements ActionListener {
         menu = new JPanel();
         menu.setBounds(0, mainWin.getHeight() / 2, mainWin.getWidth() / 2,
                 mainWin.getHeight() / 2);
-        menu.setLayout(new FlowLayout());
+        menu.setLayout(new FlowLayout(FlowLayout.CENTER));
         menu.setBackground(Color.red);
         setUpButtons();
-        stage = new JTextField();
-        stage.setColumns(10);
-        stage.setAlignmentX(SwingConstants.CENTER);
-        stage.setEditable(false);
-        stage.setText(textStage[time]);
+        setUpText();
+        addToMenu();
 
+    }
+
+    private void addToMenu() {
         menu.add(nextStage);
         menu.add(showDeck);
         menu.add(showDiscard);
         menu.add(newGame);
         menu.add(stage);
+        menu.add(results);
+        menu.add(choice);
+        menu.add(test);
+    }
 
+    private void setUpText() {
+        stage = new JTextField();
+        stage.setColumns(10);
+        stage.setAlignmentX(SwingConstants.CENTER);
+        stage.setEditable(false);
+        stage.setText(textStage[time]);
+        choice = new JComboBox();
+        for (String temp : Results.goals) {
+            choice.addItem(temp);
+        }
+        choice.addActionListener(this);
     }
 
     private void setUpPicks() {
         picks = new JPanel();
+
         picks.setBounds(mainWin.getWidth() / 2, mainWin.getHeight() / 2, mainWin.getWidth() / 2,
                 mainWin.getHeight() / 2);
         picks.setLayout(null);
@@ -119,6 +141,12 @@ public class Poker implements ActionListener {
 
         newGame = new JButton("New Game");
         newGame.addActionListener(this);
+
+        results = new JButton("Results");
+        results.addActionListener(this);
+
+        test = new JButton("Test");
+        test.addActionListener(this);
     }
 
     public void refresh() {
@@ -134,32 +162,16 @@ public class Poker implements ActionListener {
         draw.pickUp(3);
 
         for (int i = 0; i < draw.cards.size(); i++) {
-            createNewTableCard(i);
-
-            tableCards[i].add(draw.cards.get(i).getImage());
-            table.add(tableCards[i]);
+            createTable(i);
         }
-    }
-
-    public void setUpTurn() {
-        Deck.burn();
-        draw.pickUp(1);
-
-        createNewTableCard(3);
-        tableCards[3].add(draw.cards.get(3).getImage());
-        table.add(tableCards[3]);
-        refresh();
 
     }
-    
-    public void setUpRiver() {
+
+    public void setUpOne(int card) {
         Deck.burn();
         draw.pickUp(1);
+        createTable(card);
 
-        createNewTableCard(4);
-        tableCards[4].add(draw.cards.get(4).getImage());
-        table.add(tableCards[4]);
-        refresh();
     }
 
     public void setUpHand() {
@@ -172,6 +184,14 @@ public class Poker implements ActionListener {
             hand.cards.get(i).setInPlay();
             picks.add(handCards[i]);
         }
+
+    }
+
+    public void createTable(int i) {
+
+        createNewTableCard(i);
+        tableCards[i].add(draw.cards.get(i).getImage());
+        table.add(tableCards[i]);
 
     }
 
@@ -199,11 +219,38 @@ public class Poker implements ActionListener {
             newGame();
         } else if (e.getSource() == showDiscard) {
             Deck.showDiscard();
+        } else if (e.getSource() == results) {
+            stage.setText(Results.compare(hand, draw));
+        } else if (e.getSource() == test) {
+            test();
         }
     }
 
+    private void test() {
+        resetPanel(3);
+        Object test = choice.getSelectedItem();
+        if (test.toString() == Results.goals[1]) {
+            draw = new Hand();
+            for (int i = 0; i < 2; i++) {
+                draw.add(Deck.pickSpecificCardValue(1));
+                createTable(i);
+                draw.cards.get(i).setInPlay();
+            }
+        }
+
+        if (test == Results.goals[4]) {
+            draw = new Hand();
+            for (int i = 1; i < 6; i++) {
+                draw.add(Deck.pickSpecificCardValue(i));
+                createTable(i - 1);
+                draw.cards.get(i - 1).setInPlay();
+            }
+        }
+
+    }
+
     private void nextStage() {
-        switch(time){
+        switch (time) {
             case 0:
                 for (int i = 0; i < draw.cards.size(); i++) {
                     draw.cards.get(i).setInPlay();
@@ -212,27 +259,44 @@ public class Poker implements ActionListener {
                 stage.setText(textStage[time]);
                 break;
             case 1:
-                setUpTurn();
-                time++;
-                stage.setText(textStage[time]);
-                break;
-            case 2:
+                setUpOne(3);
                 draw.cards.get(3).setInPlay();
                 time++;
                 stage.setText(textStage[time]);
                 break;
-            case 3:
-                setUpRiver();
-                time++;
-                stage.setText(textStage[time]);
-                break;
-            case 4:
+            case 2:
+                setUpOne(4);
                 draw.cards.get(4).setInPlay();
                 time++;
                 stage.setText(textStage[time]);
                 break;
+            case 3:
+                time = 0;
+                restartSameDeck();
+                break;
         }
-        
+
+    }
+
+    private void restartSameDeck() {
+        while (!hand.cards.isEmpty()) {
+            Deck.discard(hand.cards.remove(0));
+        }
+        while (!draw.cards.isEmpty()) {
+            Deck.discard(draw.cards.remove(0));
+        }
+        resetPanel(5);
+        setUpHand();
+        setUpFlop();
+        refresh();
+    }
+
+    private void resetPanel(int max) {
+        int i = 0;
+        while(i < max){
+            tableCards[i].setVisible(false);
+            i++;
+        }
     }
 
     private void newGame() {

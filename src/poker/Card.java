@@ -26,6 +26,7 @@ public class Card {
     private String name;
     private int color;
     private int value;
+    private boolean inPlay;
     
     
     public Card(int color, int value){
@@ -49,9 +50,13 @@ public class Card {
     public JLabel getImage(){
         return image;
     }
-    
+        
     public ImageIcon getHide(){
         return hide;
+    }
+    
+    public boolean isInPlay(){
+        return inPlay;
     }
        
     public void setName(int color, int value){
@@ -71,6 +76,7 @@ public class Card {
     public void setInPlay(){
         show = new ImageIcon(addImage(name));
         image.setIcon(show);
+        inPlay = true;
         
     }
            

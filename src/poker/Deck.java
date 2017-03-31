@@ -25,11 +25,12 @@ public class Deck {
     
     
     public static void newDeck(){
-        deck = createDeck();        
+        deck = createDeck(); 
+        discard = new ArrayList<Card>();
     }
     public static ArrayList<Card> createDeck() {
         int color = rdn4();
-        int value = rdn14();
+        int value = rdn13();
         ArrayList<Card> deckTemp = new ArrayList<>();
         Card card = null;
         int i = 0;
@@ -41,7 +42,7 @@ public class Deck {
                 i++;
             }
             color = rdn4();
-            value = rdn14();    
+            value = rdn13();    
             
         }
         return deckTemp;
@@ -49,7 +50,33 @@ public class Deck {
     }
     
     public static Card pickCard(){
+        if(deck.isEmpty()){
+            Deck.newDeck();
+        }
         return deck.remove(0);
+    }
+    public static Card pickRandomCard(){
+        Card card = new Card(rdn4(), rdn13());
+        int temp = deck.indexOf(card);
+        return deck.remove(temp);
+    }
+    
+    public static Card pickSpecificCard(int color, int value){
+        Card card = new Card(color, value);
+       
+        return card;
+    }
+    
+    public static Card pickSpecificCardValue(int value){
+        Card card = new Card(rdn4(), value);
+        
+        return card;
+    }
+    
+    public static Card pickSpecificCardColor(int color){
+        Card card = new Card(color, rdn13());
+        
+        return card;
     }
     
     public static void discard(Card card){
@@ -66,18 +93,12 @@ public class Deck {
         return randomInt;
     }
     
-    public static int rdn14(){
+    public static int rdn13(){
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(13) + 1;
         return randomInt;
     }
-    
-    public int rdn52(){
-        Random randomGenerator = new Random();
-        int randomInt = randomGenerator.nextInt(52);
-        return randomInt;
-    }
-    
+          
     public static void showDeck(){
         JFrame mainWin;
         mainWin = new JFrame("Deck");
