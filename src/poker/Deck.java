@@ -20,78 +20,83 @@ import javax.swing.JPanel;
  */
 public class Deck {
 
-    public Card[] deck = new Card[52]; 
+    public static ArrayList<Card> deck = createDeck(); 
     
-    public boolean [] isCard = new boolean[52];
     
-    public Deck() {
-        createDeck();
-      
+    public static void newDeck(){
+        deck = createDeck();        
     }
-
-    public void createDeck() {
-        int color = 0;
-        int value = 1;
-        for(int i = 0; i < deck.length; i++) {
-            deck[i] = new Card(color, value);
-            if(value == 13){
-                value = 1;
-                color++;
-            }else{
-                value++;
+    public static ArrayList<Card> createDeck() {
+        int color = rdn4();
+        int value = rdn14();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        Card card = null;
+        int i = 0;
+        while(i < 52) {
+            
+            card = new Card(color, value);
+            if(!deckTemp.toString().contains(card.toString())){
+                deckTemp.add(card);
+                i++;
             }
+            color = rdn4();
+            value = rdn14();    
             
         }
+        return deckTemp;
+        
     }
     
-    public Card pickCard(){
-        int num = rdnGenerator52();
-        while(this.deck[num].isPicked()){
-             num = rdnGenerator52();  
-        }
-        this.deck[num].pick();
-        return this.deck[num];
+    public static Card pickCard(){
+        return deck.remove(0);
     }
     
-    public int rdnGenerator4(){
+    public static int  rdn4(){
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(4);
         return randomInt;
     }
     
-    public int rdnGenerator14(){
+    public static int rdn14(){
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(13) + 1;
         return randomInt;
     }
     
-    public int rdnGenerator52(){
+    public int rdn52(){
         Random randomGenerator = new Random();
         int randomInt = randomGenerator.nextInt(52);
         return randomInt;
     }
     
-    public void showDeck(){
+    public static void showDeck(){
         JFrame mainWin;
         mainWin = new JFrame("Deck");
-        mainWin.setSize(1100, 500);
+        mainWin.setSize(1300, 525);
         mainWin.setLocationRelativeTo(null);
         mainWin.setLayout(new GridLayout(4, 13, 20, 20));
         JLabel image = null;
-        for(int i = 0; i < deck.length; i++){
+        for(int i = 0; i < deck.size(); i++){
             JPanel temp = new JPanel();
             
             temp.setOpaque(true);
-            System.out.println(deck[i].getName());
+            //System.out.println(deck.get(i).getName());
+            image = new JLabel(new ImageIcon(deck.get(i).addImage(deck.get(i).getName())));
             
-            if(!deck[i].isPicked()){
-                image = new JLabel(new ImageIcon(deck[i].addImage(deck[i].getName())));
-            }else{
-                image = new JLabel(new ImageIcon("CardBack.png"));
-            }
             temp.add(image);
             mainWin.getContentPane().add(temp);
         }
         mainWin.setVisible(true);
+    }
+    public String toString(){
+        return getNames();
+    }
+    
+    private String getNames(){
+        String names = "";
+        for(Card card: deck){
+            names = names + card.toString() + " ";
+        }
+        return names;
     }
 }

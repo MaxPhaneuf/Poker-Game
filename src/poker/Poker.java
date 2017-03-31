@@ -5,13 +5,11 @@
  */
 package poker;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,31 +24,26 @@ public class Poker implements ActionListener{
 
     private JFrame mainWin;
     private JPanel table;
-    private JPanel hand;
+    private JPanel butPanel;
     private JPanel bet;
     private JPanel [] tableCards = new JPanel[5];
     private JPanel [] handCards = new JPanel[2];
     private JButton raise;
-    private JButton call;
+    private JButton newGame;
     private JButton fold;
-    private Card[] cards = new Card[5];
-    private int turn = 0;
+    private boolean turn = false;
     private int [] posX = {20, 110, 200, 290, 380};
-    private int posY = 70;
+    private int posY = 20;
     private int sizeX = 72;
-    private int sizeY = 104;
-    private boolean [] deckPique = new boolean[13];
-    private boolean [] deckTrefle = new boolean[13];
-    private boolean [] deckCoeur = new boolean[13];
-    private boolean [] deckCarreau = new boolean[13];
-    private Deck deck;
+    private int sizeY = 102;
+    private Hand hand;
     
     public Poker(){
         setUpWindow();
-        deck = new Deck();
-        deck.showDeck();
-        setUpTable();
-              
+        
+        refresh();
+        
+               
     }
     
     
@@ -59,7 +52,7 @@ public class Poker implements ActionListener{
     private void setUpWindow(){
         
         mainWin = new JFrame("TexasHold'Em Poker");
-        mainWin.setSize(500, 600);
+        mainWin.setSize(500, 300);
         mainWin.setLocationRelativeTo(null);
         mainWin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWin.setLayout(null);
@@ -67,27 +60,29 @@ public class Poker implements ActionListener{
         table.setSize(mainWin.getWidth(), mainWin.getHeight()/2);
         table.setLayout(null);
         table.setBackground(Color.green);
-        hand = new JPanel();
-        hand.setBounds(0 , mainWin.getHeight()/2 , mainWin.getWidth()/2,
+        butPanel = new JPanel();
+        butPanel.setBounds(0 , mainWin.getHeight()/2 , mainWin.getWidth()/2,
                 mainWin.getHeight()/2);
-        hand.setLayout(new FlowLayout());
-        hand.setBackground(Color.red);
+        butPanel.setLayout(new FlowLayout());
+        butPanel.setBackground(Color.red);
         
-        call = new JButton("Call");
-        call.setBounds(20, 200, 200, 50);
-        call.addActionListener(this);
-        hand.add(call);
+        newGame = new JButton("New Game");
+        newGame.setBounds(20, 200, 200, 50);
+        newGame.addActionListener(this);
+        raise = new JButton("Show deck");
+        raise.setBounds(20, 230, 200, 50);
+        raise.addActionListener(this);
         
+        butPanel.add(newGame);
+        butPanel.add(raise);
         
     }
     
     public void setUpTable(){
-        
-        
-        
-        for(int i = 0; i < tableCards.length; i++){
+            
+        for(int i = 0; i < 5; i++){
             createNewCard(i);
-            addFace(i, cards[i].getImage());
+            addFace(i, hand.cards[i].getImage());
                                
         }
         refresh();
@@ -95,19 +90,21 @@ public class Poker implements ActionListener{
     }
     public void refresh(){
         mainWin.getContentPane().add(table);
-        mainWin.getContentPane().add(hand);
+        mainWin.getContentPane().add(butPanel);
         mainWin.setVisible(true);
     }
     public void putInPlay(int i){
         table.remove(tableCards[i]);
         addCardPanel(i);
-        addFace(i, cards[i].setInPlay());
+        addFace(i, hand.cards[i].setInPlay());
         refresh();
     }
     
     public void createNewCard(int i){
+        
         addCardPanel(i);
-        cards[i] = deck.pickCard();
+        //cards[i] = Deck.pickCard();
+        
        
     }
             
@@ -129,9 +126,25 @@ public class Poker implements ActionListener{
     
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == call){
-            putInPlay(turn);
-            turn++;
+        if(e.getSource() == newGame){
+            
+            if(!turn){
+                hand = new Hand();
+                setUpTable();
+                turn = true; 
+                
+            }else{
+                putInPlay(0);
+                putInPlay(1);
+                putInPlay(2);
+                putInPlay(3);
+                putInPlay(4);
+             
+            }
+            
+            
+        }else if(e.getSource() == raise){
+            Deck.showDeck();
         }
     }
     

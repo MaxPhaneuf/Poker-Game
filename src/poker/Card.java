@@ -60,21 +60,17 @@ public class Card {
             name = name + faces[value - 10];
         }else if(value == 1){
             name = name + "A";
-            
         }else{
             name = name + value;
         }
         name = name + ".png";
-       // System.out.println(name);
     }
     
     public BufferedImage setInPlay(){
         setImage();
         return image;
     }
-    
-    
-       
+           
     public void setImage(){
         image = addImage(name);
     }
@@ -89,6 +85,15 @@ public class Card {
             System.out.println("File not found");
         }
         return image;
+    }
+    @Override
+    public String toString(){
+        return name;
+    }
+    
+    @Override
+    public boolean equals(Object o){
+        return this.name == o.toString();
     }
     
 }
