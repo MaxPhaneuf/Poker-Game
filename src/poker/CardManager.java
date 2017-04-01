@@ -11,16 +11,20 @@ import java.util.ArrayList;
  *
  * @author Maxime
  */
-public class Hand {
+public class CardManager {
     public ArrayList<Card> cards = new ArrayList<>();
-    public Hand(){
+    public CardManager(){
         
     }
     public void add(ArrayList<Card> card){
         cards.addAll(card);
     }
     
-    public ArrayList<Card> getCopyCard(int card){
+    public void add(Card card){
+        cards.add(card);
+    }
+    
+    public ArrayList<Card> getCopy(int card){
         ArrayList<Card> temp = new ArrayList<>();
         temp.add(cards.get(card));
         return temp;

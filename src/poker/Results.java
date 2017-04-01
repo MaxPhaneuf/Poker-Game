@@ -12,8 +12,10 @@ import java.util.ArrayList;
  * @author Max
  */
 public class Results {
-
-    public static boolean[] allTest = new boolean[10];
+    
+    public static int score = 0;
+    public static int high;
+    public static int highestPair;
     public static boolean isHighCard = false;
     public static boolean isPair = false;
     public static boolean isTwoPairs = false;
@@ -24,12 +26,13 @@ public class Results {
     public static boolean isFour = false;
     public static boolean isStraightFlush = false;
     public static boolean isRoyalFlush = false;
-    public static Hand all = new Hand();
+    public static CardManager all = new CardManager();
     public static String[] goals = {"High card", "Pair", "Two pairs",
         "Three of a kind", "Straight", "Flush", "FullHouse",
         "Four of a kind", "Straight Flush", "Royal Flush"};
 
-    public static String compare(Hand hand, Hand deck) {
+    public static String compare(CardManager hand, CardManager deck) {
+        score = 0;
         isHighCard = false;
         isPair = false;
         isTwoPairs = false;
@@ -40,22 +43,22 @@ public class Results {
         isFour = false;
         isStraightFlush = false;
         isRoyalFlush = false;
-        all = new Hand();
+        all = new CardManager();
         all = getCards(hand, deck);
 
         return getResults(getAllColor(), getAllValue());
     }
 
-    private static Hand getCards(Hand hand, Hand deck) {
+    private static CardManager getCards(CardManager hand, CardManager deck) {
 
         for (int i = 0; i < hand.cards.size(); i++) {
             if (hand.cards.get(i).isInPlay()) {
-                all.add(hand.getCopyCard(i));
+                all.add(hand.getCopy(i));
             }
         }
         for (int i = 0; i < deck.cards.size(); i++) {
             if (deck.cards.get(i).isInPlay()) {
-                all.add(deck.getCopyCard(i));
+                all.add(deck.getCopy(i));
             }
         }
         return all;
@@ -88,11 +91,6 @@ public class Results {
                 results[value.get(i) + 13]++;
             }
         }
-
-        for (int i = 1; i < results.length; i++) {
-            System.out.print(results[i] + " ");
-        }
-        System.out.println();
         return results;
     }
 
@@ -101,22 +99,8 @@ public class Results {
         String temp = null;
         for (int i = 0; i < color.size(); i++) {
             results[color.get(i)]++;
-
         }
-
-        for (int i = 0; i < results.length; i++) {
-            System.out.print(results[i] + " ");
-        }
-        System.out.println();
         return results;
-    }
-
-    public static boolean isNot(int test) {
-        boolean asw = false;
-        for (int i = test; i < allTest.length; i++) {
-            asw = !allTest[i];
-        }
-        return asw;
     }
 
     public static boolean isHighCard(int test) {
@@ -151,7 +135,15 @@ public class Results {
     public static boolean isStraightFlush() {
         return isStraight && isFlush;
     }
-
+    
+    public static boolean isRoyalFlush(int[] value){
+        boolean isBestCards = false;
+        for(int i = 10; i < value.length; i++){
+            isBestCards = (value[i] > 0);
+        }
+        return isBestCards && isStraightFlush;
+    }
+        
     public static int countStraight(int test, int count) {
         if (test > 0) {
             count++;
@@ -187,10 +179,58 @@ public class Results {
         }
     }
 
-    private static void testUltimate() {
+    private static void testUltimate(int[] value) {
         isStraightFlush = isStraightFlush();
+        isRoyalFlush = isRoyalFlush(value);
     }
-
+    private static void getHighest(int [] value){
+        int temp = 0;
+        for(int i = 1; i < value.length; i++){
+            if(value[i] >0){
+                temp = i;
+            }
+        }        
+        high = temp;
+    }
+    
+    private static void setHighestPair(int [] value){
+        int temp = 0;
+        for(int i = 1; i < value.length; i++){
+            if(value[i] == 2){
+                temp = i;
+            }
+        }  
+        if(temp > 10){
+            
+        }
+        highestPair = temp;
+    }
+    
+    public static String showHighestPair(){
+        String temp = "";
+        if(highestPair == 14){
+            temp = Card.FACES[0];
+        }else if(highestPair > 10){
+            temp = Card.FACES[highestPair - 10];
+        }else{
+            temp = "" + highestPair;
+        }
+        return temp;
+    }
+    public static String showHigh(){
+        String temp = "";
+        if(high == 14){
+            temp = Card.FACES[0];
+        }else if(high > 10){
+            temp = Card.FACES[high - 10];
+        }else{
+            temp = "" + high;
+        }
+        return temp;
+    }
+    
+    
+    
     public static String getResults(ArrayList<Integer> color,
             ArrayList<Integer> value) {
         String temp = null;
@@ -207,50 +247,68 @@ public class Results {
             countStr = countStraight(resultsValue[start], countStr);
             start++;
         }
-
+        countStr = countStraight(resultsValue[start], countStr);
         for (int results : resultsColor) {
             if(!isFlush && isFlush(results)){
                 isFlush = true;
             }
         }
-        testUltimate();
-        printResults();
+        testUltimate(resultsValue);
+        getHighest(resultsValue);
+        score = high;
+        if(isPair || isTwoPairs){
+            setHighestPair(resultsValue);
+        }
         return showResults();
     }
-
-    private static void printResults() {
-        System.out.print(isHighCard + " " + isPair + " " + isTwoPairs
-                + " " + isTriple + "\n");
+    public static int getScore(){
+        return score;
     }
-
+    
+    public static int getHighestPair(){
+        return highestPair;
+    }
+           
     private static String showResults() {
         String temp = "";
         if (isHighCard) {
-            temp = goals[0];
+            temp = goals[0] + " with " + showHigh();
         }
         if (isPair) {
-            temp = goals[1];
+            score = score + 20;
+            temp = goals[1] + " of " + showHighestPair();
         }
         if (isTwoPairs) {
-            temp = goals[2];
+            score = score + 40;
+            temp = goals[2] + " best " + showHighestPair();
         }
         if (isTriple) {
+            score = score + 60;
             temp = goals[3];
         }
         if (isStraight) {
+            score = score + 80;
             temp = goals[4];
         }
         if (isFlush) {
+            score = score + 100;
             temp = goals[5];
         }
         if (isFullHouse) {
+            score = score + 120;
             temp = goals[6];
         }
         if (isFour) {
+            score = score + 140;
             temp = goals[7];
         }
         if (isStraightFlush) {
+            score = score + 160;
             temp = goals[8];
+        }
+        if (isRoyalFlush) {
+            score = score + 180;
+            temp = goals[9];
         }
         return temp;
     }

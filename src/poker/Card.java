@@ -17,8 +17,8 @@ import javax.swing.JLabel;
  * @author Max
  */
 public class Card {
-    public static String [] colors = {"Trefle", "Pique", "Coeur", "Carreau"};  
-    public static String [] faces = {null, "J","Q","K"};
+    public static final String [] COLORS = {"Trefle", "Pique", "Coeur", "Carreau"};  
+    public static final String [] FACES = {"A","J","Q","K"};
     private JLabel image;
     private ImageIcon show;
     private ImageIcon hide; 
@@ -27,14 +27,12 @@ public class Card {
     private int color;
     private int value;
     private boolean inPlay;
-    
-    
+        
     public Card(int color, int value){
         this.color = color;
         this.value = value;
         setName(color, value);
-        setImage();
-        
+        setFaceDown();
     }
     
     public int getColor(){
@@ -60,13 +58,12 @@ public class Card {
     }
        
     public void setName(int color, int value){
-                        
         
-        name = colors[color];
+        name = COLORS[color];
         if(value > 10){
-            name = name + faces[value - 10];
+            name = name + FACES[value - 10];
         }else if(value == 1){
-            name = name + "A";
+            name = name + FACES[0];
         }else{
             name = name + value;
         }
@@ -80,7 +77,7 @@ public class Card {
         
     }
            
-    private void setImage(){
+    private void setFaceDown(){
         hide = new ImageIcon(addImage("CardBack.png"));
         image = new JLabel(hide);
         
@@ -89,7 +86,6 @@ public class Card {
     public BufferedImage addImage(String fileName) {
         
         BufferedImage temp = null;
-        
         try {
             File file = new File(fileName);
             temp = ImageIO.read(file);

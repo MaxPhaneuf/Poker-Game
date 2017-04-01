@@ -26,17 +26,20 @@ public class Deck {
 
     public static void newDeck() {
         deck = createDeck();
-        discard = new ArrayList<Card>();
     }
     
     public static void clearAll(){
         deck = new ArrayList<Card>();
         discard = new ArrayList<Card>();
     }
+    
+    public static void clearDiscard(){
+        discard = new ArrayList<Card>();
+    }
 
     public static ArrayList<Card> createDeck() {
-        int color = rdn4();
-        int value = rdn13();
+        int color = rdnGen(4);
+        int value = rdnGen(13) + 1;
         ArrayList<Card> deckTemp = new ArrayList<>();
         Card card = null;
         int i = 0;
@@ -47,8 +50,8 @@ public class Deck {
                 deckTemp.add(card);
                 i++;
             }
-            color = rdn4();
-            value = rdn13();
+            color = rdnGen(4);
+            value = rdnGen(13) + 1;
 
         }
         return deckTemp;
@@ -62,10 +65,10 @@ public class Deck {
         boolean found = false;
         do {
             if (rdnColor) {
-                color = rdn4();
+                color = rdnGen(4);
             }
             if (rdnValue) {
-                value = rdn13();
+                value = rdnGen(13) + 1;
             }
             card = new Card(color, value);
 
@@ -82,35 +85,48 @@ public class Deck {
         deck = deckTemp;
     }
 
-    public static void pickPair() {
-
+    public static void pickAs(){
         deck = new ArrayList<Card>();
         ArrayList<Card> deckTemp = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             deckTemp = createSpecificDeck(deckTemp, 0, 1, true, false);
+        }
+        saveDeck(deckTemp);
+    }
+    
+    public static void pickPair() {
+        int num = rdnGen(13) + 1;
+        deck = new ArrayList<Card>();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            deckTemp = createSpecificDeck(deckTemp, 0, num, true, false);
         }
         saveDeck(deckTemp);
     }
 
     public static void pickTwoPair() {
-
+        int num = rdnGen(13) + 1;
+        int num2 = rdnGen(13) + 1;
+        while(num2 == num){
+           num2 = rdnGen(13) + 1;; 
+        }
         deck = new ArrayList<Card>();
         ArrayList<Card> deckTemp = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
-            deckTemp = createSpecificDeck(deckTemp, 0, 1, true, false);
+            deckTemp = createSpecificDeck(deckTemp, 0,num, true, false);
         }
         for (int i = 0; i < 2; i++) {
-            deckTemp = createSpecificDeck(deckTemp, 0, 11, true, false);
+            deckTemp = createSpecificDeck(deckTemp, 0, num2, true, false);
         }
         saveDeck(deckTemp);
     }
 
     public static void pickTriple() {
-
+        int num = rdnGen(13) + 1;
         deck = new ArrayList<Card>();
         ArrayList<Card> deckTemp = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
-            deckTemp = createSpecificDeck(deckTemp, 0, 7, true, false);
+            deckTemp = createSpecificDeck(deckTemp, 0, num, true, false);
         }
         saveDeck(deckTemp);
     }
@@ -118,20 +134,91 @@ public class Deck {
     public static void pickStraight() {
         deck = new ArrayList<Card>();
         ArrayList<Card> deckTemp = new ArrayList<>();
+        int start = rdnGen(10) + 1;
+        int temp = 0;
         for (int i = 0; i < 5; i++) {
-            deckTemp = createSpecificDeck(deckTemp, 0, i + 1, true, false);
+            if(start + i == 14){
+                temp = 1;
+            }else{
+                temp = start + i;
+            }
+            deckTemp = createSpecificDeck(deckTemp, 0,temp , true, false);
         }
         saveDeck(deckTemp);
     }
 
     public static void pickFlush() {
+        int num = rdnGen(4);
         deck = new ArrayList<Card>();
         ArrayList<Card> deckTemp = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            deckTemp = createSpecificDeck(deckTemp, 0, i + 1, true, false);
+            deckTemp = createSpecificDeck(deckTemp, num, 0, false, true);
         }
         saveDeck(deckTemp);
     }
+    
+    public static void pickFullHouse() {
+        int num = rdnGen(13) + 1;
+        int num2 = rdnGen(13) + 1;
+        while(num2 == num){
+           num2 = rdnGen(13) + 1;; 
+        }
+        deck = new ArrayList<Card>();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            deckTemp = createSpecificDeck(deckTemp, 0,num, true, false);
+        }
+        for (int i = 0; i < 3; i++) {
+            deckTemp = createSpecificDeck(deckTemp, 0, num2, true, false);
+        }
+        saveDeck(deckTemp);
+    }
+    
+    public static void pickFour() {
+        int num = rdnGen(13) + 1;
+        deck = new ArrayList<Card>();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            deckTemp = createSpecificDeck(deckTemp, 0, num, true, false);
+        }
+        saveDeck(deckTemp);
+    }
+    
+    public static void pickStraightFlush() {
+        deck = new ArrayList<Card>();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        int start = rdnGen(9) + 1;
+        int num = rdnGen(4);
+        int temp = 0;
+        for (int i = 0; i < 5; i++) {
+            if(start + i == 14){
+                temp = 1;
+            }else{
+                temp = start + i;
+            }
+            deckTemp = createSpecificDeck(deckTemp, num, temp , false, false);
+        }
+        saveDeck(deckTemp);
+    }
+    
+    public static void pickRoyalFlush() {
+        deck = new ArrayList<Card>();
+        ArrayList<Card> deckTemp = new ArrayList<>();
+        int start = 10;
+        int num = rdnGen(4);
+        int temp = 0;
+        for (int i = 0; i < 5; i++) {
+            if(start + i == 14){
+                temp = 1;
+            }else{
+                temp = start + i;
+            }
+            deckTemp = createSpecificDeck(deckTemp, num, temp , false, false);
+        }
+        saveDeck(deckTemp);
+    }
+    
+    
 
     public static ArrayList<Card> pickCard(int nbr) {
         ArrayList<Card> cards = new ArrayList<>();
@@ -149,31 +236,6 @@ public class Deck {
         }
         return cards;
     }
-
-    public static Card pickRandomCard() {
-        Card card = new Card(rdn4(), rdn13());
-        int temp = deck.indexOf(card);
-        return deck.remove(temp);
-    }
-
-    public static Card pickSpecificCard(int color, int value) {
-        Card card = new Card(color, value);
-
-        return card;
-    }
-
-    public static Card pickSpecificCardValue(int value) {
-        Card card = new Card(rdn4(), value);
-
-        return card;
-    }
-
-    public static Card pickSpecificCardColor(int color) {
-        Card card = new Card(color, rdn13());
-
-        return card;
-    }
-
     public static void discard(ArrayList<Card> card) {
         discard.addAll(card);
     }
@@ -182,15 +244,9 @@ public class Deck {
         discard(Deck.pickCard(1));
     }
 
-    public static int rdn4() {
+    public static int rdnGen(int num) {
         Random randomGenerator = new Random();
-        int randomInt = randomGenerator.nextInt(4);
-        return randomInt;
-    }
-
-    public static int rdn13() {
-        Random randomGenerator = new Random();
-        int randomInt = randomGenerator.nextInt(13) + 1;
+        int randomInt = randomGenerator.nextInt(num);
         return randomInt;
     }
 
