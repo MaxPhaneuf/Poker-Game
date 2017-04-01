@@ -16,14 +16,28 @@ public class Hand {
     public Hand(){
         
     }
-    public void add(Card card){
-        cards.add(card);
+    public void add(ArrayList<Card> card){
+        cards.addAll(card);
+    }
+    
+    public ArrayList<Card> getCopyCard(int card){
+        ArrayList<Card> temp = new ArrayList<>();
+        temp.add(cards.get(card));
+        return temp;
+    }
+    
+    public ArrayList<Card> remove(int nbr){
+        ArrayList<Card> temp = new ArrayList<>();
+        for(int i = 0; i < nbr; i++){
+            temp.add(cards.remove(0));
+        }
+        return temp;
     }
     
     public void pickUp(int nbrCards){
-        for(int i = 0; i < nbrCards; i++){
-            cards.add(Deck.pickCard());
-        }
+       
+        cards.addAll(Deck.pickCard(nbrCards));
+       
     }
     
     
