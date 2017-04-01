@@ -5,19 +5,10 @@
  */
 package poker;
 
-import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-
 
 /**
  *
@@ -58,15 +49,16 @@ public class Poker implements ActionListener {
         mainWin.setLocationRelativeTo(null);
         mainWin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWin.setLayout(null);
+        mainWin.setResizable(false);
     }
-            
+    
     public void refresh() {
         mainWin.getContentPane().add(table.table);
         mainWin.getContentPane().add(menu.menu);
         mainWin.getContentPane().add(player.picks);
         mainWin.setVisible(true);
     }
-        
+    
     public void setAction(){
         menu.nextStage.addActionListener(this);
         menu.showDeck.addActionListener(this);
@@ -124,6 +116,7 @@ public class Poker implements ActionListener {
                 break;
         }
     }
+    
     public void deckCheck(int cards){
         if(Deck.deck.size() <= cards){
             menu.nextStage.setEnabled(false);
