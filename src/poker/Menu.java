@@ -67,7 +67,7 @@ public class Menu {
     
      private void setUpText() {
         stage = new JTextField();
-        stage.setColumns(10);
+        stage.setColumns(20);
         stage.setAlignmentX(SwingConstants.CENTER);
         stage.setEditable(false);
         choice = new JComboBox();
@@ -83,6 +83,7 @@ public class Menu {
         showDiscard = new JButton("Show Discard");
         newGame = new JButton("New Game");
         results = new JButton("Results");
+        results.setEnabled(false);
         test = new JButton("Test");
         
     }

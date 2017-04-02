@@ -5,11 +5,13 @@
  */
 package poker;
 
-import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import static poker.Poker.POSX_PICK;
 import static poker.Poker.SIZEX;
 import static poker.Poker.SIZEY;
@@ -18,37 +20,77 @@ import static poker.Poker.SIZEY;
  *
  * @author Max
  */
-public class Player {
+public class Player implements ActionListener{
     public int score;
-    public JPanel picks;
-    public JLabel yourHand;
-    private JFrame mainWin;
+    public JFrame mainWin;
+    public JFrame picks;
+    public JButton showHand;
+    public JButton raise;
+    public JButton call;
+    public JButton fold;
+    public JTextField raiseBox;
     public ArrayList<JPanel> handCards = new ArrayList<>();
     public CardManager hand;
+    public boolean pressed;
     
     public Player(JFrame mainWin) {
-        this.mainWin = mainWin;
-        setUpPicks();
+       this.mainWin = mainWin;
+        setUpWindow();
     }
     
-    public void setUpPicks() {
-        picks = new JPanel();
-        picks.setBounds(mainWin.getWidth() / 2, mainWin.getHeight() / 2,
-                mainWin.getWidth() / 2, mainWin.getHeight() / 2);
+    private void setUpWindow() {
+        picks = new JFrame("Your Hand");
+        picks.setSize(220, 250);
+        picks.setLocationRelativeTo(mainWin);
+        picks.setLocation(mainWin.getX() + mainWin.getWidth(), mainWin.getY());
+        picks.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         picks.setLayout(null);
-        yourHand = new JLabel("Your hand");
-        yourHand.setBounds(70, 0, 100,20);
-        picks.add(yourHand);
+        picks.setResizable(false);
+        setUpButtons();
+        setUpText();
+        
     }
     
+    private void setUpButtons(){
+        showHand = new JButton("Show");
+        showHand.setLocation(110, 140);
+        showHand.setSize(75,20);
+        showHand.addActionListener(this);
+        picks.getContentPane().add(showHand);
+        
+        raise = new JButton("Raise");
+        raise.setLocation(20, 140);
+        raise.setSize(75,20);
+        raise.addActionListener(this);
+        picks.getContentPane().add(raise);
+        
+        call = new JButton("Call");
+        call.setLocation(110, 165);
+        call.setSize(75,20);
+        call.addActionListener(this);
+        picks.getContentPane().add(call);
+        
+        fold = new JButton("Fold");
+        fold.setLocation(45, 190);
+        fold.setSize(120,20);
+        fold.addActionListener(this);
+        picks.getContentPane().add(fold);
+    }
+    
+    private void setUpText(){
+        raiseBox = new JTextField("0");
+        raiseBox.setLocation(20, 165);
+        raiseBox.setSize(75, 20);
+        picks.getContentPane().add(raiseBox);
+    }
+            
     public void setUpHand() {
         hand = new CardManager();
         hand.pickUp(2);
         for (int i = 0; i < hand.cards.size(); i++) {
             createNewHand(i);
             handCards.get(i).add(hand.cards.get(i).getImage());
-            hand.cards.get(i).setInPlay();
-            picks.add(handCards.get(i));
+            picks.getContentPane().add(handCards.get(i));
         }
         
     }
@@ -70,6 +112,37 @@ public class Player {
     public void discardHand(){
         while (!hand.cards.isEmpty()) {
             Deck.discard(hand.remove(1));
+        }
+    }
+    public void showHand(){
+        for (int i = 0; i < hand.cards.size(); i++) {
+                hand.cards.get(i).setInPlay();
+            
+         }
+        
+    }
+    
+    public void hideHand(){
+        for (int i = 0; i < hand.cards.size(); i++) {
+                hand.cards.get(i).setFaceDown();
+            
+         }
+        
+    }
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == showHand) {
+            if(!pressed){
+                pressed = true;
+                showHand();
+                showHand.setText("Hide");
+            }else{
+                pressed = false;
+                hideHand();
+                showHand.setText("Show");
+            }
+            
+            
         }
     }
 }

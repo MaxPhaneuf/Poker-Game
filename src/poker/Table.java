@@ -20,7 +20,7 @@ public class Table {
     public JPanel table;
     public ArrayList<JPanel> tableCards = new ArrayList<>();
     public CardManager draw;
-    public int[] posX = {20, 110, 200, 290, 380};
+    public int[] posX = {30, 120, 210, 300, 390};
     public int[] posXPicks = {20, 110};
     public int posY = 20;
     public int sizeX = 72;
@@ -36,7 +36,7 @@ public class Table {
         table = new JPanel();
         table.setSize(mainWin.getWidth(), (mainWin.getHeight() / 3) + 20);
         table.setLayout(null);
-        table.setBackground(Color.green);
+        table.setBackground(Color.BLACK);
     }
     
     public void setUpFlop() {
@@ -55,6 +55,10 @@ public class Table {
         createTable(card);
         
     }
+    /**
+     * Create the cards a table
+     * @param i card index 
+     */
     public void createTable(int i) {
         
         createNewTableCard(i);
@@ -67,7 +71,7 @@ public class Table {
         
         tableCards.add(new JPanel());
         tableCards.get(i).setBounds(posX[i], posY, sizeX, sizeY);
-        tableCards.get(i).setBackground(Color.GREEN);
+        tableCards.get(i).setBackground(Color.BLACK);
     }
     
     public void resetTable() {

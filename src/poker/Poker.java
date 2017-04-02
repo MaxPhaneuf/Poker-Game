@@ -16,22 +16,25 @@ import javax.swing.JOptionPane;
  */
 public class Poker implements ActionListener {
     public static final String[] STAGE = {"Pre-Flop", "Flop", "Turn", "River"};
-    public static final int[] POSX = {20, 110, 200, 290, 380};
+    public static final int[] POSX = {40, 130, 220, 310, 400};
     public static final int[] POSX_PICK = {20, 110};
     public static final int POSY = 20;
     public static final int SIZEX = 72;
     public static final int SIZEY = 102;
-    
+    public boolean activeTest = false;
     private JFrame mainWin;
     public Table table;
     public Menu menu;
     public Player player;
+    public Bets bets;
     public int time = 0;
         
     public Poker() {
         setUp();
         player.setUpHand();
+        //cpu.setUpHand();
         table.setUpFlop();
+        menu.nextStage.setEnabled(false);
         refresh();
     }
     
@@ -41,11 +44,13 @@ public class Poker implements ActionListener {
         menu = new Menu(table, mainWin);
         setAction();
         player = new Player(mainWin);
+        //cpu = new Bets(mainWin);
+        
     }
        
     private void setUpWindow() {
         mainWin = new JFrame("TexasHold'Em Poker");
-        mainWin.setSize(500, 400);
+        mainWin.setSize(500, 380);
         mainWin.setLocationRelativeTo(null);
         mainWin.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainWin.setLayout(null);
@@ -55,8 +60,10 @@ public class Poker implements ActionListener {
     public void refresh() {
         mainWin.getContentPane().add(table.table);
         mainWin.getContentPane().add(menu.menu);
-        mainWin.getContentPane().add(player.picks);
+      //   mainWin.getContentPane().add(cpu.cpu);
         mainWin.setVisible(true);
+        player.picks.setVisible(true);
+        player.picks.setAlwaysOnTop(true);
     }
     
     public void setAction(){
@@ -86,19 +93,7 @@ public class Poker implements ActionListener {
         time++;
     }
     
-    private void restart() {
-        menu.nextStage.setText("Flop");
-        time = 0;
-        table.resetTable();
-        table.discardDraw();
-        player.resetHand();
-        player.discardHand();
-        player.setUpHand();
-        table.setUpFlop();
-        menu.stage.setText("");
-        refresh();
-    }
-            
+                
     private void nextStage() {
         switch (time) {
             case 0:
@@ -110,6 +105,8 @@ public class Poker implements ActionListener {
                 break;
             case 2:
                 openCard(4, 3, "New Draw" );
+                menu.results.setEnabled(true);
+                //cpu.reveal();
                 break;
             case 3:
                 restart();
@@ -122,17 +119,10 @@ public class Poker implements ActionListener {
             menu.nextStage.setEnabled(false);
         }
     }
-    private void setUpTest(){
-        menu.nextStage.setEnabled(false);
-        table.resetTable();
-        table.discardDraw();
-        player.resetHand();
-        player.discardHand();
-        Deck.clearAll();
-        refresh();
-    }
-    
+   
     private void test() {
+        menu.results.setEnabled(true);
+        activeTest = true;
         setUpTest();
         int test = menu.choice.getSelectedIndex();
             
@@ -164,8 +154,36 @@ public class Poker implements ActionListener {
                 "New Game?", JOptionPane.OK_CANCEL_OPTION);
         if (choice == 0) {
             menu.nextStage.setEnabled(true);
+            menu.results.setEnabled(false);
             freshStart();
         }
+    }
+    
+    private void resetEveryOne(){
+        table.resetTable();
+        table.discardDraw();
+        player.resetHand();
+        player.discardHand();
+        //cpu.resetHand();
+        //cpu.discardHand();
+        refresh();
+    }
+    private void setUpTest(){
+        menu.nextStage.setEnabled(false);
+        resetEveryOne();
+        Deck.clearAll();
+        refresh();
+    }
+    
+    private void restart() {
+        menu.nextStage.setText("Flop");
+        time = 0;
+        resetEveryOne();
+        player.setUpHand();
+        //cpu.setUpHand();
+        table.setUpFlop();
+        menu.stage.setText("");
+        refresh();
     }
     
     private void freshStart(){
@@ -173,9 +191,11 @@ public class Poker implements ActionListener {
         Deck.clearDiscard();
         table.resetTable();
         player.resetHand();
+        //cpu.resetHand();
         menu.nextStage.setText("Flop");
         time = 0;
         player.setUpHand();
+        //cpu.setUpHand();
         table.setUpFlop();
         menu.stage.setText("");
         refresh();
@@ -193,15 +213,47 @@ public class Poker implements ActionListener {
         } else if (e.getSource() == menu.showDiscard) {
             Deck.showDiscard();
         } else if (e.getSource() == menu.results) {
-            menu.stage.setText(Results.compare(player.hand, table.draw));
+           resultPress();
         } else if (e.getSource() == menu.test) {
             test();
         }
     }
     
+    public void resultPress(){
+         if(!activeTest){
+                menu.stage.setText(compareScore());
+            }else{
+                Results result = new Results(player.hand, table.draw);
+                menu.stage.setText(result.result);
+            }
+    }
+    public String compareScore(){
+        Results playerResult = new Results(player.hand, table.draw);
+        //Results playerResult = new Results(cpu.hand, table.draw);
+        String winner = "";
+        int score = playerResult.getScore();
+        int score2 = playerResult.getScore();
+        
+        if(score > score2){
+            winner = "Player wins with " + playerResult.result;
+        }else if(score2 > score){
+            winner = "House wins with " + playerResult.result;
+        }else if(score == score2){
+            if(playerResult.handHigh > playerResult.handHigh){
+                winner = "Player wins with " + playerResult.result;
+            }else if(playerResult.handHigh < playerResult.handHigh){
+                winner = "House wins with " + playerResult.result;
+            }else{
+                winner = "Split pot ";
+            }
+        }
+        return winner;
+    }
+    
     public static void main(String[] args) {
         
         new Poker();
+       
     }
     
 }
