@@ -9,8 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Iterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import static sun.audio.AudioPlayer.player;
 
 /**
  *
@@ -31,6 +33,7 @@ public class Poker implements ActionListener {
     public Bets bets;
     public ArrayList<Player> players = new ArrayList<Player>();
     public int nbrPlayers = 4;
+    public int foldedPlayers = nbrPlayers;
     public int playerInPlay = 0;
     public int blindPlayer = 1;
     public int time = 0;
@@ -43,6 +46,7 @@ public class Poker implements ActionListener {
         bets.blindMoney = bets.blindMoney.add(new BigDecimal(10));
         bets.showMoney();
         addPlayers();
+        
         refresh();
     }
 
@@ -53,7 +57,7 @@ public class Poker implements ActionListener {
 
             players.add(new Player(mainWin, bets, i));
             players.get(i).setUpHand();
-            players.get(i).money.money = players.get(i).money.money.add(new BigDecimal(1000));
+            players.get(i).money = players.get(i).money.add(new BigDecimal(1000));
             players.get(i).showMoney();
             players.get(i).picks.setVisible(true);
 
@@ -66,6 +70,7 @@ public class Poker implements ActionListener {
             }
         }
         players.get(players.size() - 1).endTurn();
+        players.get(blindPlayer - 1).startTurn();
 
     }
 
@@ -99,7 +104,7 @@ public class Poker implements ActionListener {
         menu.nextStage.addActionListener(this);
         menu.showDeck.addActionListener(this);
         menu.showDiscard.addActionListener(this);
-        menu.newGame.addActionListener(this);
+        menu.newDraw.addActionListener(this);
         menu.results.addActionListener(this);
         menu.test.addActionListener(this);
         menu.choice.addActionListener(this);
@@ -110,7 +115,6 @@ public class Poker implements ActionListener {
         for (int i = 0; i < table.draw.cards.size(); i++) {
             table.draw.cards.get(i).setInPlay();
         }
-        deckCheck(1);
         table.setUpOne(3);
         time++;
     }
@@ -118,14 +122,19 @@ public class Poker implements ActionListener {
     private void openCard(int card, int check, String msg) {
         menu.nextStage.setText(msg);
         table.draw.cards.get(card).setInPlay();
-        deckCheck(check);
         time++;
     }
 
     private boolean allPlayed() {
         boolean temp = false;
-        for (Player player : players) {
-            temp = player.endTurn;
+        int i = 0;
+        while(i < players.size() && players.get(i).endTurn) {
+            temp = players.get(i).endTurn;
+            //continuer ici pour que les tour continue quand les raise sont pas régles
+            temp = players.get(i).raiseMoney.intValue() == bets.raiseMoney.intValue();
+            System.out.println(players.get(i).raiseMoney);
+            System.out.println(bets.raiseMoney);
+            i++;
         }
 
         return temp;
@@ -135,13 +144,19 @@ public class Poker implements ActionListener {
         bets.raiseMoney = new BigDecimal(0);
         bets.showMoney();
         players.get(blindPlayer - 1).startTurn();
+        menu.newDraw.setEnabled(false);
 
     }
 
     public void preflop() {
-        players.get(blindPlayer - 1).money.money
-                = players.get(blindPlayer - 1).money.money.subtract(bets.blindMoney);
+        players.get(blindPlayer - 1).money
+                = players.get(blindPlayer - 1).money.subtract(bets.blindMoney);
+        
+        
     }
+   
+    
+    
 
     public void showAll() {
         for (Player player : players) {
@@ -163,26 +178,18 @@ public class Poker implements ActionListener {
                     break;
                 case 2:
                     openCard(4, 3, "Show cards");
-                    menu.results.setEnabled(true);
-                    
+                 
                     break;
                 case 3:
-                    
+                    resultPress();
                     showAll();
-                    //restart();
-                    //blindPlayer++;
-                    //startTurn();
+                    menu.newDraw.setEnabled(true);
                     break;
             }
         }
     }
 
-    public void deckCheck(int cards) {
-        if (Deck.deck.size() <= cards) {
-            menu.nextStage.setEnabled(false);
-        }
-    }
-
+   
     private void test() {
         menu.results.setEnabled(true);
         activeTest = true;
@@ -274,7 +281,7 @@ public class Poker implements ActionListener {
             nextStage();
         } else if (e.getSource() == menu.showDeck) {
             Deck.showDeck();
-        } else if (e.getSource() == menu.newGame) {
+        } else if (e.getSource() == menu.newDraw) {
             newGame();
         } else if (e.getSource() == menu.showDiscard) {
             Deck.showDiscard();
@@ -354,8 +361,10 @@ public class Poker implements ActionListener {
         String winner = "";
         winner = "Player " + (win + 1) + " wins with " + resultTab().get(win).result;
         
-        players.get(win).money.money = players.get(win).money.money.add(bets.potMoney);
+        players.get(win).money = players.get(win).money.add(bets.potMoney);
         bets.potMoney = new BigDecimal(0);
+        players.get(win).showMoney();
+        bets.showMoney();
         return winner;
     }
 

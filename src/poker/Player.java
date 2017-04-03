@@ -24,7 +24,10 @@ import static poker.Poker.SIZEY;
  * @author Max
  */
 public class Player implements ActionListener {
-
+    
+    public BigDecimal money;
+    public BigDecimal raiseMoney = new BigDecimal(0);
+    public boolean blindPaid;
     public int score;
     public JFrame mainWin;
     public JFrame picks;
@@ -49,7 +52,7 @@ public class Player implements ActionListener {
     public Player nextPlayer = null;
     public int[] posX;
     public int[] posY;
-    public MoneyManager money;
+   
 
     public Player(JFrame mainWin, Bets bets, int nbr) {
         playerNbr = nbr;
@@ -58,7 +61,7 @@ public class Player implements ActionListener {
             mainWin.getX() + mainWin.getWidth() + 10, mainWin.getX() - 230, mainWin.getX() - 230};
         posY = new int[]{mainWin.getY(), mainWin.getY() + 260, mainWin.getY(), mainWin.getY() + 260};
         this.bets = bets;
-        money = new MoneyManager(this, bets);
+        
         setUpWindow();
 
     }
@@ -70,7 +73,7 @@ public class Player implements ActionListener {
         picks.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         picks.setLayout(null);
         picks.setResizable(false);
-        money.money = new BigDecimal(0);
+        money = new BigDecimal(0);
         setUpButtons();
         setUpText();
 
@@ -218,6 +221,62 @@ public class Player implements ActionListener {
             }
         }
     }
+    
+     public void call() {
+        BigDecimal blind = new BigDecimal(0);
+        BigDecimal temp = bets.raiseMoney;
+
+        if (!blindPaid) {
+            blind = payBlind(blind);
+        }
+        if (raising) {
+            raise();
+            temp = temp.add(raiseMoney);
+            
+
+        }
+        if (temp.intValue() <= money.intValue()) {
+            money = money.subtract(temp.add(blind));
+            bets.raiseMoney = temp;
+            raiseMoney = temp;
+            bets.potMoney = bets.potMoney.add(temp.add(blind));
+            showMoney();
+            bets.showMoney();
+            if (nextPlayer != null) {
+                    nextPlayer.startTurn();
+            }
+            endTurn();
+        }
+             
+    }
+
+    public void raise() {
+        BigDecimal temp = bets.raiseMoney.add(new BigDecimal(parse()));
+        raiseMoney = temp;
+    }
+
+    private BigDecimal payBlind(BigDecimal temp) {
+        blindPaid = true;
+        temp = temp.add(bets.blindMoney);
+        return temp;
+
+    }
+
+    public String parse() {
+        String temp = raiseBox.getText();
+        if (!temp.isEmpty()) {
+            int i = temp.indexOf("$");
+            if (i > -1) {
+                temp = temp.substring(0, i);
+            }
+        } else {
+            temp = "0";
+        }
+
+        return temp;
+
+    }
+
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -226,11 +285,11 @@ public class Player implements ActionListener {
         } else {
 
             if (e.getSource() == this.call) {
-                money.call();
+                call();
                 raising = false;
 
             } else if (e.getSource() == this.raise) {
-                BigDecimal temp = new BigDecimal(money.parse());
+                BigDecimal temp = new BigDecimal(parse());
                 raise.setText(bets.raiseMoney.add(temp).toString() + "S");
                 raising = true;
 

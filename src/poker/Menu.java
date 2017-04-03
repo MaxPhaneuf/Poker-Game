@@ -29,7 +29,7 @@ public class Menu {
     public JButton showDeck;
     public JButton nextStage;
     public JButton showDiscard;
-    public JButton newGame;
+    public JButton newDraw;
     public JButton results;
     public JButton test;
     
@@ -58,7 +58,7 @@ public class Menu {
         menu.add(showDeck);
         menu.add(showDiscard);
         menu.add(nextStage);
-        menu.add(newGame);
+        menu.add(newDraw);
         menu.add(stage);
         menu.add(results);
         menu.add(choice);
@@ -81,9 +81,10 @@ public class Menu {
         nextStage = new JButton("Flop");
         showDeck = new JButton("Show deck");
         showDiscard = new JButton("Show Discard");
-        newGame = new JButton("New Game");
+        newDraw = new JButton("New draw");
         results = new JButton("Results");
         results.setEnabled(false);
+        newDraw.setEnabled(false);
         test = new JButton("Test");
         
     }
