@@ -22,7 +22,7 @@ public class Card {
     private JLabel image;
     private ImageIcon show;
     private ImageIcon hide; 
-   
+    public boolean isInPlay;
     private String name;
     private int color;
     private int value;
@@ -71,6 +71,7 @@ public class Card {
     public void setInPlay(){
         show = new ImageIcon(addImage(name));
         image.setIcon(show);
+        isInPlay = true;
         
         
     }

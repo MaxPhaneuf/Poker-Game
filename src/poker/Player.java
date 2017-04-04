@@ -7,9 +7,7 @@ package poker;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import static java.lang.Integer.parseInt;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -23,7 +21,7 @@ import static poker.Poker.SIZEY;
  *
  * @author Max
  */
-public class Player implements ActionListener {
+public class Player{
     
     public BigDecimal money;
     public BigDecimal raiseMoney = new BigDecimal(0);
@@ -83,26 +81,26 @@ public class Player implements ActionListener {
         showHand = new JButton("Show");
         showHand.setLocation(110, 140);
         showHand.setSize(75, 20);
-        showHand.addActionListener(this);
+        //showHand.addActionListener(this);
         picks.getContentPane().add(showHand);
 
         raise = new JButton("Raise?");
         raise.setLocation(20, 140);
         raise.setSize(75, 20);
-        raise.addActionListener(this);
+        //raise.addActionListener(this);
         picks.getContentPane().add(raise);
         raise.setEnabled(true);
 
         call = new JButton("Call");
         call.setLocation(110, 165);
         call.setSize(75, 20);
-        call.addActionListener(this);
+        //call.addActionListener(this);
         picks.getContentPane().add(call);
 
         fold = new JButton("Fold");
         fold.setLocation(45, 190);
         fold.setSize(120, 20);
-        fold.addActionListener(this);
+        //fold.addActionListener(this);
         picks.getContentPane().add(fold);
     }
 
@@ -110,7 +108,7 @@ public class Player implements ActionListener {
         raiseBox = new JTextField("0$");
         raiseBox.setLocation(20, 165);
         raiseBox.setSize(75, 20);
-        raiseBox.addActionListener(this);
+        //raiseBox.addActionListener(this);
         picks.getContentPane().add(raiseBox);
         showMoney = new JTextField("0$");
 
@@ -128,6 +126,7 @@ public class Player implements ActionListener {
             createNewHand(i);
             handCards.get(i).add(hand.cards.get(i).getImage());
             picks.getContentPane().add(handCards.get(i));
+            
         }
 
     }
@@ -278,7 +277,7 @@ public class Player implements ActionListener {
     }
 
 
-    @Override
+    /*@Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.showHand) {
             isShown();
@@ -297,13 +296,24 @@ public class Player implements ActionListener {
                 if (nextPlayer != null) {
                     nextPlayer.startTurn();
                 }
-                folded = true;
-                picks.setState(JFrame.ICONIFIED);
+                fold();
+                
                 endTurn();
 
             }
         }
-
+    }*/
+    public void fold(){
+        folded = true;
+        picks.setState(JFrame.ICONIFIED);
+        endTurn();
+        
+    }
+    
+    public void unFold(){
+        folded = false;
+        picks.setState(JFrame.NORMAL);
+        
     }
 
     @Override

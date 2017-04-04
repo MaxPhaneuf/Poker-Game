@@ -70,7 +70,9 @@ public class Results {
         }
         for (int i = 0; i < deck.cards.size(); i++) {
 
-            all.add(deck.getCopy(i));
+            if(deck.cards.get(i).isInPlay){
+                all.add(deck.getCopy(i));
+            }
 
         }
     }

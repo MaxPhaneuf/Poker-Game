@@ -9,10 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Iterator;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import static sun.audio.AudioPlayer.player;
 
 /**
  *
@@ -32,6 +30,7 @@ public class Poker implements ActionListener {
     public Menu menu;
     public Bets bets;
     public ArrayList<Player> players = new ArrayList<Player>();
+    public ArrayList<BigDecimal> playersMoney = new ArrayList<>();
     public int nbrPlayers = 4;
     public int foldedPlayers = nbrPlayers;
     public int playerInPlay = 0;
@@ -39,15 +38,25 @@ public class Poker implements ActionListener {
     public int time = 0;
 
     public Poker() {
+        
         setUp();
+      
 
         table.setUpFlop();
 
         bets.blindMoney = bets.blindMoney.add(new BigDecimal(10));
         bets.showMoney();
+        startMoney();
         addPlayers();
-        
+        setPlayerButtons();
+        startTurn();
         refresh();
+    }
+    
+    public void startMoney() {
+        for (int i = 0; i < nbrPlayers; i++) {
+            playersMoney.add(new BigDecimal(1000));
+        }
     }
 
     public void addPlayers() {
@@ -57,7 +66,7 @@ public class Poker implements ActionListener {
 
             players.add(new Player(mainWin, bets, i));
             players.get(i).setUpHand();
-            players.get(i).money = players.get(i).money.add(new BigDecimal(1000));
+            players.get(i).money = players.get(i).money.add(playersMoney.get(i));
             players.get(i).showMoney();
             players.get(i).picks.setVisible(true);
 
@@ -108,6 +117,30 @@ public class Poker implements ActionListener {
         menu.results.addActionListener(this);
         menu.test.addActionListener(this);
         menu.choice.addActionListener(this);
+        
+    }
+    public void setPlayerButtons(){
+        setCall();
+        setRaise();
+        setFold();
+    }
+
+    public void setCall() {
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).call.addActionListener(this);
+        }
+    }
+
+    public void setFold() {
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).fold.addActionListener(this);
+        }
+    }
+    
+    public void setRaise(){
+        for (int i = 0; i < players.size(); i++) {
+            players.get(i).raise.addActionListener(this);
+        }
     }
 
     private void flopStage() {
@@ -128,12 +161,11 @@ public class Poker implements ActionListener {
     private boolean allPlayed() {
         boolean temp = false;
         int i = 0;
-        while(i < players.size() && players.get(i).endTurn) {
+        playerFolded();
+        while (i < players.size() && players.get(i).endTurn) {
             temp = players.get(i).endTurn;
             //continuer ici pour que les tour continue quand les raise sont pas régles
             temp = players.get(i).raiseMoney.intValue() == bets.raiseMoney.intValue();
-            System.out.println(players.get(i).raiseMoney);
-            System.out.println(bets.raiseMoney);
             i++;
         }
 
@@ -145,18 +177,24 @@ public class Poker implements ActionListener {
         bets.showMoney();
         players.get(blindPlayer - 1).startTurn();
         menu.newDraw.setEnabled(false);
+        menu.nextStage.setEnabled(false);
+        menu.results.setEnabled(false);
 
+    }
+
+    public void playerFolded() {
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).folded) {
+                players.remove(i);
+            }
+        }
     }
 
     public void preflop() {
         players.get(blindPlayer - 1).money
                 = players.get(blindPlayer - 1).money.subtract(bets.blindMoney);
-        
-        
+
     }
-   
-    
-    
 
     public void showAll() {
         for (Player player : players) {
@@ -178,7 +216,7 @@ public class Poker implements ActionListener {
                     break;
                 case 2:
                     openCard(4, 3, "Show cards");
-                 
+
                     break;
                 case 3:
                     resultPress();
@@ -189,7 +227,6 @@ public class Poker implements ActionListener {
         }
     }
 
-   
     private void test() {
         menu.results.setEnabled(true);
         activeTest = true;
@@ -219,14 +256,15 @@ public class Poker implements ActionListener {
         }
     }
 
-    private void newGame() {
-        int choice = JOptionPane.showConfirmDialog(mainWin, "Are you sure?",
-                "New Game?", JOptionPane.OK_CANCEL_OPTION);
-        if (choice == 0) {
-            menu.nextStage.setEnabled(true);
-            menu.results.setEnabled(false);
-            freshStart();
-        }
+    private void newDraw() {
+        //int choice = JOptionPane.showConfirmDialog(mainWin, "Are you sure?",
+        //        "New Game?", JOptionPane.OK_CANCEL_OPTION);
+        //if (choice == 0) {
+        //    menu.nextStage.setEnabled(true);
+        //    menu.results.setEnabled(false);
+        freshStart();
+        startTurn();
+        //}
     }
 
     private void resetEveryOne() {
@@ -264,9 +302,11 @@ public class Poker implements ActionListener {
         Deck.newDeck();
         Deck.clearDiscard();
         table.resetTable();
+        addPlayers();
         for (Player player : players) {
             player.resetHand();
             player.setUpHand();
+            
         }
         menu.nextStage.setText("Flop");
         time = 0;
@@ -275,23 +315,7 @@ public class Poker implements ActionListener {
         refresh();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == menu.nextStage) {
-            nextStage();
-        } else if (e.getSource() == menu.showDeck) {
-            Deck.showDeck();
-        } else if (e.getSource() == menu.newDraw) {
-            newGame();
-        } else if (e.getSource() == menu.showDiscard) {
-            Deck.showDiscard();
-        } else if (e.getSource() == menu.results) {
-            resultPress();
-        } else if (e.getSource() == menu.test) {
-            test();
-
-        }
-    }
+    
 
     public void nextPlayer() {
         if (playerInPlay < nbrPlayers - 1) {
@@ -305,7 +329,12 @@ public class Poker implements ActionListener {
 
     public void resultPress() {
         if (!activeTest) {
-            menu.stage.setText(getWinner());
+            
+            if (players.size() > 1) {
+                menu.stage.setText(getWinner(compareScore(scoreTab(resultTab()))));
+            } else {
+                menu.stage.setText(getWinner(0));
+            }
         } else {
             Results result = new Results(null, table.draw);
             menu.stage.setText(result.result);
@@ -356,16 +385,60 @@ public class Poker implements ActionListener {
         return win;
     }
 
-    public String getWinner() {
-        int win = compareScore(scoreTab(resultTab()));
+    public String getWinner(int win) {
+
         String winner = "";
-        winner = "Player " + (win + 1) + " wins with " + resultTab().get(win).result;
-        
+        winner = "Player " + (players.get(win).playerNbr + 1) + " wins with " + resultTab().get(win).result;
+
         players.get(win).money = players.get(win).money.add(bets.potMoney);
         bets.potMoney = new BigDecimal(0);
         players.get(win).showMoney();
         bets.showMoney();
         return winner;
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+       
+        if (e.getSource() == menu.nextStage) {
+            nextStage();
+        } else if (e.getSource() == menu.showDeck) {
+            Deck.showDeck();
+        } else if (e.getSource() == menu.newDraw) {
+            newDraw();
+        } else if (e.getSource() == menu.showDiscard) {
+            Deck.showDiscard();
+        } else if (e.getSource() == menu.results) {
+            resultPress();
+        } else if (e.getSource() == menu.test) {
+            test();
+        } else if (e.getSource() == players.get(playerInPlay).fold) {
+            if (players.size() <= 2) {
+               
+                players.get(playerInPlay).fold();
+                players.get(playerInPlay).nextPlayer.endTurn();
+                players.remove(players.get(playerInPlay));
+                resultPress();
+                showAll();
+                menu.newDraw.setEnabled(true);
+                menu.nextStage.setEnabled(false);
+                
+            }else{
+                players.get(playerInPlay).fold();
+                players.get(playerInPlay).nextPlayer.startTurn();
+                players.remove(players.get(playerInPlay));
+                
+            }
+            
+        }else if(e.getSource() == players.get(playerInPlay).call){
+            players.get(playerInPlay).call();
+            players.get(playerInPlay).raising = false;
+            nextPlayer();
+        }else if(e.getSource() == players.get(playerInPlay).raise){
+            BigDecimal temp = new BigDecimal(players.get(playerInPlay).parse());
+            players.get(playerInPlay).raise.setText(bets.raiseMoney.add(temp).toString() + "S");
+            players.get(playerInPlay).raising = true;
+        }
     }
 
     public static void main(String[] args) {

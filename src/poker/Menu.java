@@ -83,8 +83,6 @@ public class Menu {
         showDiscard = new JButton("Show Discard");
         newDraw = new JButton("New draw");
         results = new JButton("Results");
-        results.setEnabled(false);
-        newDraw.setEnabled(false);
         test = new JButton("Test");
         
     }
