@@ -247,7 +247,6 @@ public class Player {
         } else {
             call.setText("Call");
         }
-        raise.setEnabled(true);
         call.setEnabled(true);
         fold.setEnabled(true);
         showHand.setEnabled(true);
@@ -284,7 +283,7 @@ public class Player {
     }
 
     public BigDecimal raise() {
-        BigDecimal temp2;
+        BigDecimal temp2 = new BigDecimal(0);
         if (raiseChoice.getSelectedIndex() != 4) {
             String temp = (String) raiseChoice.getSelectedItem();
             temp = temp.substring(0, temp.length() - 1);
@@ -298,6 +297,7 @@ public class Player {
             }
        
         }
+       
         return temp2;
     }
     

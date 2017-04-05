@@ -18,7 +18,7 @@ public class PlayerManager {
 
     public ArrayList<Player> players = new ArrayList<Player>();
     public ArrayList<BigDecimal> playersMoney = new ArrayList<>();
-    public int nbrPlayers = 8;
+    public int nbrPlayers = 2;
     public int inPlay = 0;
     public int blind = nbrPlayers;
     public JFrame mainWin;
@@ -125,7 +125,7 @@ public class PlayerManager {
 
     public void eliminate() {
         for (int i = 0; i < players.size(); i++) {
-            
+
             if (players.get(i).money.compareTo(BigDecimal.ZERO) == 0) {
                 players.get(i).picks.setVisible(false);
                 players.remove(i);
@@ -182,6 +182,7 @@ public class PlayerManager {
         players.get(players.size() - 1).nextPlayer = players.get(0);
         players.get(0).previousPlayer = players.get(players.size() - 1);
         players.get(firstPlayer()).startTurn();
+        players.get(firstPlayer()).raise.setEnabled(true);
 
     }
 
@@ -191,6 +192,7 @@ public class PlayerManager {
         }
     }
 
+    //In construction
     public void preFlop() {
         players.get(blind - 1).money
                 = players.get(firstPlayer()).money.subtract(bets.blindMoney);
@@ -295,7 +297,11 @@ public class PlayerManager {
         }
 
         players.get(inPlay).startTurn();
-
+        if (bets.raiseMoney.intValue() + bets.blindMoney.intValue() >= inPlay().money.intValue()) {
+                inPlay().raise.setEnabled(false);
+            } else {
+                inPlay().raise.setEnabled(true);
+        }
     }
 
     public ArrayList<Results> resultTab() {
@@ -341,18 +347,18 @@ public class PlayerManager {
 
         return win;
     }
-    
-    public String twoBest(){
+
+    public String twoBest() {
         int temp = players.get(0).score;
         int i = 0;
         int j = 1;
         boolean best = false;
-        while(i < players.size()){
-            
-            do{
+        while (i < players.size()) {
+
+            do {
                 best = players.get(i).score > players.get(j).score;
-                
-            }while(j < players.size() && best);
+
+            } while (j < players.size() && best);
         }
         return "";
     }
