@@ -176,6 +176,7 @@ public class Poker implements ActionListener {
         if (players.size() <= 1) {
             players.nbrPlayers = choice;
         }
+        players.addPlayers();
         menu.newDraw.setEnabled(false);
         menu.stage.setText("");
         Deck.clearAll();
