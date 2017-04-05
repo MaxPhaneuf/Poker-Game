@@ -54,7 +54,7 @@ public class Results {
         CardManager temp2 = new CardManager();
         for (int i = 0; i < temp.cards.size(); i++) {
 
-            hand.add(temp.getCopy(i));
+            hand.add(temp.getAt(i));
 
         }
     }
@@ -64,14 +64,14 @@ public class Results {
         if (temp != null) {
             for (int i = 0; i < temp.cards.size(); i++) {
 
-                all.add(temp.getCopy(i));
+                all.add(temp.getAt(i));
 
             }
         }
         for (int i = 0; i < deck.cards.size(); i++) {
 
             if(deck.cards.get(i).isInPlay){
-                all.add(deck.getCopy(i));
+                all.add(deck.getAt(i));
             }
 
         }
@@ -175,11 +175,16 @@ public class Results {
     }
 
     public boolean isRoyalFlush() {
-        boolean isBestCards = false;
-        for (int i = 10; i < valueTab.length; i++) {
-            isBestCards = (valueTab[i] > 0);
-        }
-        return isBestCards && isStraightFlush;
+        boolean temp = false;
+        int i = 10;
+        do {
+            
+            temp = valueTab[i] > 0;
+            
+            i++;
+        } while (temp && i < valueTab.length);
+            
+        return temp && isStraightFlush;
     }
 
     public int countStraight(int test, int count) {
@@ -323,11 +328,11 @@ public class Results {
         }
         if (isPair) {
             score = handHigh + high + 50;
-            temp = goals[1] + " of " + showHighestPair();
+            temp = goals[1]; 
         }
         if (isTwoPairs) {
             score = handHigh + high + 100;
-            temp = goals[2] + " best " + showHighestPair();
+            temp = goals[2]; 
         }
         if (isTriple) {
             score = handHigh + high + 200;

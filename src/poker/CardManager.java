@@ -24,10 +24,23 @@ public class CardManager {
         cards.add(card);
     }
     
-    public ArrayList<Card> getCopy(int card){
+    public boolean isEmpty(){
+        return cards.isEmpty();
+    }
+    
+    public int size(){
+        return cards.size();
+    }
+    
+    
+    public ArrayList<Card> getAt(int card){
         ArrayList<Card> temp = new ArrayList<>();
         temp.add(cards.get(card));
         return temp;
+    }
+    
+    public Card get(int card){
+        return cards.get(card);
     }
     
     public ArrayList<Card> remove(int nbr){
@@ -37,7 +50,7 @@ public class CardManager {
         }
         return temp;
     }
-    
+            
     public void pickUp(int nbrCards){
        
         cards.addAll(Deck.pickCard(nbrCards));

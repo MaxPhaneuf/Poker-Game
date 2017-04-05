@@ -20,23 +20,24 @@ import javax.swing.SwingConstants;
  */
 public class Menu {
    
-    public Poker poker;
     public Table table;
     public JFrame mainWin;
     public JPanel menu;
     public JTextField stage;
     public JComboBox choice;
     public JButton showDeck;
-    public JButton nextStage;
+    public JButton showCards;
     public JButton showDiscard;
     public JButton newDraw;
     public JButton results;
     public JButton test;
+    public Poker poker;
     
     
     public Menu(Table table, JFrame mainWin){
         this.table = table;
         this.mainWin = mainWin;
+        this.poker = poker;
         setUpMenu();
         
     }
@@ -52,12 +53,13 @@ public class Menu {
         setUpText();
         addToMenu();
         
+        
     }
     
     private void addToMenu() {
         menu.add(showDeck);
         menu.add(showDiscard);
-        menu.add(nextStage);
+        menu.add(showCards);
         menu.add(newDraw);
         menu.add(stage);
         menu.add(results);
@@ -74,18 +76,26 @@ public class Menu {
         for (String temp : Results.goals) {
             choice.addItem(temp);
         }
+        choice.setVisible(false);
         
     }
      
      private void setUpButtons() {
-        nextStage = new JButton("Flop");
+        showCards = new JButton("Show Cards");
         showDeck = new JButton("Show deck");
         showDiscard = new JButton("Show Discard");
         newDraw = new JButton("New draw");
         results = new JButton("Results");
         test = new JButton("Test");
+        newDraw.setEnabled(false);
+        results.setVisible(false);
+        showCards.setVisible(false);
+        showDeck.setVisible(false);
+        showDiscard.setVisible(false);
         
     }
+         
+    
    
 }
 

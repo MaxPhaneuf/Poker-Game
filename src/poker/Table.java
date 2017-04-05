@@ -29,9 +29,17 @@ public class Table {
     public Table(JFrame mainWin){
         this.mainWin = mainWin;
         setUpTable();
+        setUpFlop();
     }
     
-   
+    public Card get(int i){
+        return draw.get(i);
+    }
+    
+    public int size(){
+        return draw.size();
+    }
+    
     public void setUpTable() {
         table = new JPanel();
         table.setSize(mainWin.getWidth(), (mainWin.getHeight() / 3) + 20);
@@ -43,7 +51,6 @@ public class Table {
         draw = new CardManager();
         Deck.burn();
         draw.pickUp(3);
-        
         for (int i = 0; i < draw.cards.size(); i++) {
             createTable(i);
         }
@@ -55,10 +62,7 @@ public class Table {
         createTable(card);
         
     }
-    /**
-     * Create the cards a table
-     * @param i card index 
-     */
+    
     public void createTable(int i) {
         
         createNewTableCard(i);
@@ -75,90 +79,18 @@ public class Table {
     }
     
     public void resetTable() {
+        
         while (!tableCards.isEmpty()) {
             tableCards.get(0).setVisible(false);
             tableCards.remove(0);
+            draw.cards.remove(0);
         }
         
     }
     
-    public void discardDraw(){
-        while (!draw.cards.isEmpty()) {
-            Deck.discard(draw.remove(1));
-        }
-        
+    public void newDraw(){
+        resetTable();
+        setUpFlop();
     }
-    public void testPick(int nbr){
-        draw.add(Deck.pickCard(nbr));
-        for (int i = 0; i < nbr; i++) {
-            createTable(i);
-            draw.cards.get(i).setInPlay();
-        }
-    }
-    
-    public void testHighCard(){
-        draw = new CardManager();
-        Deck.pickAs();
-        testPick(1);
-    }
-
-    public void testPair() {
-        draw = new CardManager();
-        Deck.pickPair();
-        testPick(2);
-    }
-    
-    public void testTwoPair() {
-        draw = new CardManager();
-        Deck.pickTwoPair();
-        testPick(4);
-    }
-    
-    public void testTriple() {
-        draw = new CardManager();
-        Deck.pickTriple();
-        testPick(3);
-    }
-    
-    
-    public void testStraight() {
-        
-        draw = new CardManager();
-        Deck.pickStraight();
-        testPick(5);
-    }
-    
-    public void testFlush() {
-        
-        draw = new CardManager();
-        Deck.pickFlush();
-        testPick(5);
-        
-    }
-    
-    public void testFullHouse() {
-        
-        draw = new CardManager();
-        Deck.pickFullHouse();
-        testPick(5);
-        
-    }
-    
-    public void testFour(){
-        draw = new CardManager();
-        Deck.pickFour();
-        testPick(4);
-    }
-    
-    public void testStraightFlush(){
-        draw = new CardManager();
-        Deck.pickStraightFlush();
-        testPick(5);
-    }
-    
-    public void testRoyalFlush(){
-        draw = new CardManager();
-        Deck.pickRoyalFlush();
-        testPick(5);
-    }
+      
 }

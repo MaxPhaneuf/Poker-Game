@@ -31,17 +31,16 @@ public class Bets {
     public BigDecimal blindMoney;
     public BigDecimal potMoney;
     public BigDecimal raiseMoney;
-    public Bets(JFrame mainWin){
+    public Bets(JFrame mainWin, int blind){
         this.mainWin = mainWin;
-        blindMoney = new BigDecimal(0);
+        blindMoney = new BigDecimal(blind);
         potMoney = new BigDecimal(0);
         raiseMoney = new BigDecimal(0);
         setUpBets(); 
         setUpFields();
         showMoney(); 
     }
-    
-    
+   
     public void setUpFields(){
         blindText = new JLabel("Blinds : ");
         blindText.setBounds(0, 0, 50 ,20);
@@ -76,7 +75,7 @@ public class Bets {
         bets.setBounds(mainWin.getWidth() / 2, mainWin.getHeight() / 2,
                 mainWin.getWidth() / 2, mainWin.getHeight() / 2);
         bets.setLayout(null);
-        
+                
     }
     
     public void showMoney(){
