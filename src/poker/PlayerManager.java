@@ -18,7 +18,7 @@ public class PlayerManager {
 
     public ArrayList<Player> players = new ArrayList<Player>();
     public ArrayList<BigDecimal> playersMoney = new ArrayList<>();
-    public int nbrPlayers = 2;
+    public int nbrPlayers = 8;
     public int inPlay = 0;
     public int blind = nbrPlayers;
     public JFrame mainWin;
